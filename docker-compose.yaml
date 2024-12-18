@@ -1,0 +1,42 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MYSQL_DATABASE=wordpress
+    volumes:
+      - dbdata:/var/lib/mysql
+    command: '--default-authentication-plugin=mysql_native_password'
+
+  instance:
+    depends_on:
+      - db
+    image: wordpress:6.7.1-fpm-alpine
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - WORDPRESS_DB_HOST=db:3306
+      - WORDPRESS_DB_USER=$MYSQL_USER
+      - WORDPRESS_DB_PASSWORD=$MYSQL_PASSWORD
+      - WORDPRESS_DB_NAME=wordpress
+    volumes:
+      - ./wp:/var/www/html
+      - ./backup:/var/www/html/wp-content/updraft
+
+  webserver:
+    depends_on:
+      - instance
+    image: nginx:1.15.12-alpine
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "$PORT:80"
+    volumes:
+      - ./wp:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+      - ./nginx-entrypoint.sh:/usr/local/bin/entrypoint.sh
+    entrypoint: [ "/usr/local/bin/entrypoint.sh" ]
+
+volumes:
+  dbdata:
