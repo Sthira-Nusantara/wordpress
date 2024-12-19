@@ -23,6 +23,7 @@ services:
     volumes:
       - ./wp:/var/www/html
       - ./backup:/var/www/html/wp-content/updraft
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
 
   webserver:
     depends_on:
