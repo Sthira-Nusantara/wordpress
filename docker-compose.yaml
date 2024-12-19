@@ -12,7 +12,9 @@ services:
   instance:
     depends_on:
       - db
-    image: wordpress:6.7.1-fpm-alpine
+    build:
+      dockerfile: wordpress.Dockerfile
+      context: ./image
     restart: unless-stopped
     env_file: .env
     environment:
@@ -23,22 +25,19 @@ services:
     volumes:
       - ./wp:/var/www/html
       - ./backup:/var/www/html/wp-content/updraft
-      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
-      - ./php.ini:/usr/local/etc/php/php.ini
 
   webserver:
     depends_on:
       - instance
-    image: nginx:1.15.12-alpine
+    build:
+      dockerfile: nginx.Dockerfile
+      context: ./image
     restart: unless-stopped
     env_file: .env
     ports:
       - "$PORT:80"
     volumes:
       - ./wp:/var/www/html
-      - ./nginx-conf:/etc/nginx/conf.d
-      - ./nginx-entrypoint.sh:/usr/local/bin/entrypoint.sh
-    entrypoint: [ "/usr/local/bin/entrypoint.sh" ]
 
 volumes:
   dbdata:
