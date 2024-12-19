@@ -24,6 +24,7 @@ services:
       - ./wp:/var/www/html
       - ./backup:/var/www/html/wp-content/updraft
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+      - ./php.ini:/usr/local/etc/php/php.ini
 
   webserver:
     depends_on:
