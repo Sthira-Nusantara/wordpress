@@ -4,6 +4,9 @@ server {
 
         server_name _;
 
+        client_max_body_size 1000M;
+
+
         index index.php index.html index.htm;
 
         root /var/www/html;
